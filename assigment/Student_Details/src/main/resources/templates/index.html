@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Person</title>
+</head>
+<body>
+    <h1>Create Person</h1>
+    <form id="personForm">
+        <label for="firstName">First Name:</label>
+        <input type="text" id="firstName" name="firstName" required><br><br>
+        
+        <label for="middleName">Middle Name:</label>
+        <input type="text" id="middleName" name="middleName" required><br><br>
+        
+        <label for="lastName">Last Name:</label>
+        <input type="text" id="lastName" name="lastName" required><br><br>
+        
+        <button type="submit">Create Person</button>
+    </form>
+
+    <script>
+        document.getElementById('personForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting normally
+            
+            var firstName = document.getElementById('firstName').value;
+            var middleName = document.getElementById('middleName').value;
+            var lastName = document.getElementById('lastName').value;
+            
+            // Generate password using JavaScript logic
+            var password = generatePassword(firstName, middleName, lastName);
+            
+            // Create JSON object with form data and generated password
+            var formData = {
+                firstName: firstName,
+                middleName: middleName,
+                lastName: lastName,
+                password: password
+            };
+            
+            // Send form data to Spring Boot backend
+            fetch('http://localhost:8080/persons', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                alert('Person created successfully!');
+                // Optionally redirect to another page or perform other actions
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('An error occurred while creating person. Please try again.');
+            });
+        });
+        
+        // JavaScript logic to generate password
+        function generatePassword(firstName, middleName, lastName) {
+            var firstChars = firstName.substring(0, 2);
+            var middleChars = middleName.substring(0, 2);
+            var lastChars = lastName.substring(0, 2);
+            var randomNumber = Math.floor(100 + Math.random() * 900);
+            return firstChars + middleChars + lastChars + randomNumber;
+        }
+    </script>
+</body>
+</html>
